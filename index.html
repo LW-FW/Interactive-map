@@ -19,7 +19,7 @@
   <h2>Login</h2>
   <input id="email" type="email" placeholder="Email" />
   <input id="password" type="password" placeholder="Password" />
-  <button onclick="loginUser()">Login</button>
+  <button id="login-btn">Login</button>
   <p id="login-error" style="color:red;"></p>
 </div>
 
@@ -36,6 +36,7 @@
   const loginDiv = document.getElementById('login');
   const mapDiv = document.getElementById('map');
   const loginError = document.getElementById('login-error');
+  const loginBtn = document.getElementById('login-btn');
 
   const greenIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
@@ -72,6 +73,8 @@
       loadMapAndMarkers();
     }
   }
+
+  loginBtn.addEventListener('click', loginUser);
 
   async function loadMapAndMarkers() {
     if (!map) {
