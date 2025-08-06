@@ -1,0 +1,149 @@
+console.log("main.js loaded");
+
+// Initialize Supabase client
+const supabaseUrl = 'https://jdkhhywfskabkpzbizbs.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impka2hoeXdmc2thYmtwemJpemJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0ODY3MjAsImV4cCI6MjA3MDA2MjcyMH0.u6Fd5rAuP40WUx5iQDXvpnZ7tWR5fQXLPwIDqeB5NvA';
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+// UI elements
+const loginDiv = document.getElementById('login');
+const mapDiv = document.getElementById('map');
+const loginError = document.getElementById('login-error');
+const loginBtn = document.getElementById('login-btn');
+
+// Custom icons
+const greenIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+});
+
+const redIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+});
+
+let map;
+let markersLayer;
+
+loginBtn.addEventListener('click', loginUser);
+
+async function loginUser() {
+  loginError.textContent = '';
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  if (!email || !password) {
+    loginError.textContent = 'Please enter email and password.';
+    return;
+  }
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    loginError.textContent = error.message;
+  } else {
+    loginDiv.style.display = 'none';
+    mapDiv.style.display = 'block';
+    loadMapAndMarkers();
+  }
+}
+
+async function loadMapAndMarkers() {
+  if (!map) {
+    map = L.map('map').setView([51.505, -0.09], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+    markersLayer = L.layerGroup().addTo(map);
+  }
+
+  markersLayer.clearLayers();
+
+  const { data: markers, error } = await supabaseClient.from('markers').select('*');
+
+  if (error) {
+    alert('Failed to load markers: ' + error.message);
+    return;
+  }
+
+  for (const marker of markers) {
+    const icon = marker.active ? greenIcon : redIcon;
+    const leafletMarker = L.marker([marker.lat, marker.lng], { icon }).addTo(markersLayer);
+
+    const buttonId = `toggle-${marker.id}`;
+    const formId = `upload-${marker.id}`;
+    const fileListId = `files-${marker.id}`;
+
+    const filesHtml = await listFiles(marker.id);
+
+    leafletMarker.bindPopup(`
+      <b>${marker.name}</b><br/>
+      Active: ${marker.active ? 'Yes' : 'No'}<br/>
+      <button id="${buttonId}">Turn ${marker.active ? 'Off' : 'On'}</button>
+      <hr>
+      <form id="${formId}">
+        <input type="file" name="files" multiple />
+        <button type="submit">Upload</button>
+      </form>
+      <div class="file-list" id="${fileListId}">${filesHtml}</div>
+    `);
+
+    leafletMarker.on('popupopen', () => {
+      document.getElementById(buttonId).onclick = async () => {
+        await toggleMarker(marker.id, !marker.active);
+        map.closePopup();
+      };
+
+      document.getElementById(formId).onsubmit = async (e) => {
+        e.preventDefault();
+        const files = e.target.files.files;
+        if (files.length === 0) return alert("No files selected.");
+        await uploadFiles(marker.id, files);
+        map.closePopup();
+      };
+    });
+  }
+}
+
+async function toggleMarker(id, newState) {
+  const { error } = await supabaseClient.from('markers').update({ active: newState }).eq('id', id);
+  if (error) alert('Failed to update marker: ' + error.message);
+  else loadMapAndMarkers();
+}
+
+async function uploadFiles(markerId, files) {
+  for (const file of files) {
+    const filePath = `${markerId}/${file.name}`;
+    const { error } = await supabaseClient.storage.from('attachments').upload(filePath, file, {
+      upsert: true,
+    });
+    if (error) {
+      alert(`Error uploading ${file.name}: ${error.message}`);
+    }
+  }
+}
+
+async function listFiles(markerId) {
+  const { data, error } = await supabaseClient.storage.from('attachments').list(`${markerId}/`);
+  if (error) return '<p>Error loading files</p>';
+  if (!data.length) return '<p>No files yet</p>';
+
+  return data.map(file => {
+    const url = supabaseClient.storage.from('attachments').getPublicUrl(`${markerId}/${file.name}`).data.publicUrl;
+    return `<a href="${url}" target="_blank">${file.name}</a>`;
+  }).join('');
+}
+
+// Run on page load
+window.addEventListener('DOMContentLoaded', async () => {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+
+  if (session) {
+    loginDiv.style.display = 'none';
+    mapDiv.style.display = 'block';
+    loadMapAndMarkers();
+  } else {
+    loginDiv.style.display = 'block';
+    mapDiv.style.display = 'none';
+  }
+});
