@@ -25,9 +25,6 @@
 
 <div id="map"></div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" onload="checkLibraries()"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js" onload="checkLibraries()"></script>
-
 <script>
   let leafletLoaded = false;
   let supabaseLoaded = false;
@@ -36,7 +33,7 @@
   function checkLibraries() {
     if (typeof L !== 'undefined') leafletLoaded = true;
     if (typeof supabase !== 'undefined') supabaseLoaded = true;
-    
+
     if (leafletLoaded && supabaseLoaded && !appInitialized) {
       appInitialized = true;
       initializeApp();
@@ -45,9 +42,9 @@
 
   function initializeApp() {
     console.log('Initializing app with loaded libraries...');
-    
+
     const supabaseUrl = 'https://jdkhhywfskabkpzbizbs.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impka2hoeXdmc2thYmtwemJpemJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0ODY3MjAsImV4cCI6MjA3MDA2MjcyMH0.u6Fd5rAuP40WUx5iQDXvpnZ7tWR5fQXLPwIDqeB5NvA';
+    const supabaseKey = 'your-anon-key-here';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
     const loginDiv = document.getElementById('login');
@@ -177,7 +174,7 @@
       }).join('');
     }
 
-    // Initialize the app
+    // Initialize app session check
     async function initApp() {
       const { data: { session } } = await supabaseClient.auth.getSession();
 
@@ -191,15 +188,12 @@
       }
     }
 
-    // Start the app
     initApp();
   }
-
-  // Also try to initialize when DOM is ready (fallback)
-  document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(checkLibraries, 100);
-  });
 </script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" onload="checkLibraries()"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js" onload="checkLibraries()"></script>
 
 </body>
 </html>
