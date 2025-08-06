@@ -31,7 +31,7 @@
 <script>
   const supabaseUrl = 'https://jdkhhywfskabkpzbizbs.supabase.co';
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impka2hoeXdmc2thYmtwemJpemJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0ODY3MjAsImV4cCI6MjA3MDA2MjcyMH0.u6Fd5rAuP40WUx5iQDXvpnZ7tWR5fQXLPwIDqeB5NvA'; // <-- replace with your anon key
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
   const loginDiv = document.getElementById('login');
   const mapDiv = document.getElementById('map');
@@ -63,7 +63,7 @@
       return;
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
     if (error) {
       loginError.textContent = error.message;
@@ -85,7 +85,7 @@
 
     markersLayer.clearLayers();
 
-    const { data: markers, error } = await supabase.from('markers').select('*');
+    const { data: markers, error } = await supabaseClient.from('markers').select('*');
 
     if (error) {
       alert('Failed to load markers: ' + error.message);
@@ -132,7 +132,7 @@
   }
 
   async function toggleMarker(id, newState) {
-    const { error } = await supabase.from('markers').update({ active: newState }).eq('id', id);
+    const { error } = await supabaseClient.from('markers').update({ active: newState }).eq('id', id);
     if (error) alert('Failed to update marker: ' + error.message);
     else loadMapAndMarkers();
   }
@@ -140,7 +140,7 @@
   async function uploadFiles(markerId, files) {
     for (const file of files) {
       const filePath = `${markerId}/${file.name}`;
-      const { error } = await supabase.storage.from('attachments').upload(filePath, file, {
+      const { error } = await supabaseClient.storage.from('attachments').upload(filePath, file, {
         upsert: true,
       });
       if (error) {
@@ -150,18 +150,18 @@
   }
 
   async function listFiles(markerId) {
-    const { data, error } = await supabase.storage.from('attachments').list(`${markerId}/`);
+    const { data, error } = await supabaseClient.storage.from('attachments').list(`${markerId}/`);
     if (error) return '<p>Error loading files</p>';
     if (!data.length) return '<p>No files yet</p>';
 
     return data.map(file => {
-      const url = supabase.storage.from('attachments').getPublicUrl(`${markerId}/${file.name}`).data.publicUrl;
+      const url = supabaseClient.storage.from('attachments').getPublicUrl(`${markerId}/${file.name}`).data.publicUrl;
       return `<a href="${url}" target="_blank">${file.name}</a>`;
     }).join('');
   }
 
   window.onload = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await supabaseClient.auth.getSession();
 
     if (session) {
       loginDiv.style.display = 'none';
