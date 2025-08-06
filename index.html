@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Supabase + Leaflet Login Example</title>
-<!-- Leaflet CSS -->
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
-<style>
-  #map { height: 90vh; display: none; }
-  #login { max-width: 300px; margin: 50px auto; }
-  #login input { display: block; margin: 10px 0; padding: 8px; width: 100%; }
-  #login button { padding: 8px 12px; width: 100%; cursor: pointer; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Supabase + Leaflet Login</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    #map { height: 90vh; display: none; }
+    #login { max-width: 300px; margin: 50px auto; }
+    #login input { display: block; margin: 10px 0; padding: 8px; width: 100%; }
+    #login button { padding: 8px 12px; width: 100%; cursor: pointer; }
+    .file-list a { display: block; margin-top: 5px; }
+  </style>
 </head>
 <body>
 
@@ -28,22 +25,18 @@
 
 <div id="map"></div>
 
-<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<!-- Supabase JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
 
 <script>
-  // Replace these with your project URL and anon key
   const supabaseUrl = 'https://jdkhhywfskabkpzbizbs.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impka2hoeXdmc2thYmtwemJpemJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0ODY3MjAsImV4cCI6MjA3MDA2MjcyMH0.u6Fd5rAuP40WUx5iQDXvpnZ7tWR5fQXLPwIDqeB5NvA';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impka2hoeXdmc2thYmtwemJpemJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0ODY3MjAsImV4cCI6MjA3MDA2MjcyMH0.u6Fd5rAuP40WUx5iQDXvpnZ7tWR5fQXLPwIDqeB5NvA'; // <-- replace with your anon key
   const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
   const loginDiv = document.getElementById('login');
   const mapDiv = document.getElementById('map');
   const loginError = document.getElementById('login-error');
 
-  // Custom Leaflet icons for active/inactive
   const greenIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
     shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
@@ -59,7 +52,6 @@
   let map;
   let markersLayer;
 
-  // Login function
   async function loginUser() {
     loginError.textContent = '';
     const email = document.getElementById('email').value;
@@ -75,26 +67,19 @@
     if (error) {
       loginError.textContent = error.message;
     } else {
-      // Hide login, show map
       loginDiv.style.display = 'none';
       mapDiv.style.display = 'block';
       loadMapAndMarkers();
     }
   }
 
-  // Load map and markers
   async function loadMapAndMarkers() {
     if (!map) {
       map = L.map('map').setView([51.505, -0.09], 13);
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-      }).addTo(map);
-
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
       markersLayer = L.layerGroup().addTo(map);
     }
 
-    // Clear existing markers
     markersLayer.clearLayers();
 
     const { data: markers, error } = await supabase.from('markers').select('*');
@@ -104,52 +89,82 @@
       return;
     }
 
-    markers.forEach(marker => {
-      // Use green icon if active, red if not
+    for (const marker of markers) {
       const icon = marker.active ? greenIcon : redIcon;
-
       const leafletMarker = L.marker([marker.lat, marker.lng], { icon }).addTo(markersLayer);
+
+      const buttonId = `toggle-${marker.id}`;
+      const formId = `upload-${marker.id}`;
+      const fileListId = `files-${marker.id}`;
+
+      const filesHtml = await listFiles(marker.id);
 
       leafletMarker.bindPopup(`
         <b>${marker.name}</b><br/>
         Active: ${marker.active ? 'Yes' : 'No'}<br/>
-        <button onclick="toggleMarker(${marker.id}, ${!marker.active})">
-          Turn ${marker.active ? 'Off' : 'On'}
-        </button>
+        <button id="${buttonId}">Turn ${marker.active ? 'Off' : 'On'}</button>
+        <hr>
+        <form id="${formId}">
+          <input type="file" name="files" multiple />
+          <button type="submit">Upload</button>
+        </form>
+        <div class="file-list" id="${fileListId}">${filesHtml}</div>
       `);
 
       leafletMarker.on('popupopen', () => {
-        // Fix: attach button listener since it’s in popup
-        document.querySelector('button').onclick = () => {
-          toggleMarker(marker.id, !marker.active);
+        document.getElementById(buttonId).onclick = async () => {
+          await toggleMarker(marker.id, !marker.active);
+          map.closePopup();
+        };
+
+        document.getElementById(formId).onsubmit = async (e) => {
+          e.preventDefault();
+          const files = e.target.files.files;
+          if (files.length === 0) return alert("No files selected.");
+          await uploadFiles(marker.id, files);
           map.closePopup();
         };
       });
-    });
-  }
-
-  // Toggle marker active state
-  async function toggleMarker(id, newState) {
-    const { error } = await supabase.from('markers').update({ active: newState }).eq('id', id);
-
-    if (error) {
-      alert('Failed to update marker: ' + error.message);
-    } else {
-      loadMapAndMarkers();
     }
   }
 
-  // On page load, check if already logged in
+  async function toggleMarker(id, newState) {
+    const { error } = await supabase.from('markers').update({ active: newState }).eq('id', id);
+    if (error) alert('Failed to update marker: ' + error.message);
+    else loadMapAndMarkers();
+  }
+
+  async function uploadFiles(markerId, files) {
+    for (const file of files) {
+      const filePath = `${markerId}/${file.name}`;
+      const { error } = await supabase.storage.from('attachments').upload(filePath, file, {
+        upsert: true,
+      });
+      if (error) {
+        alert(`Error uploading ${file.name}: ${error.message}`);
+      }
+    }
+  }
+
+  async function listFiles(markerId) {
+    const { data, error } = await supabase.storage.from('attachments').list(`${markerId}/`);
+    if (error) return '<p>Error loading files</p>';
+    if (!data.length) return '<p>No files yet</p>';
+
+    return data.map(file => {
+      const url = supabase.storage.from('attachments').getPublicUrl(`${markerId}/${file.name}`).data.publicUrl;
+      return `<a href="${url}" target="_blank">${file.name}</a>`;
+    }).join('');
+  }
+
   window.onload = async () => {
     const { data: { session } } = await supabase.auth.getSession();
 
     if (session) {
-      // Logged in: hide login, show map
       loginDiv.style.display = 'none';
       mapDiv.style.display = 'block';
       loadMapAndMarkers();
     } else {
-      // Not logged in: show login
       loginDiv.style.display = 'block';
       mapDiv.style.display = 'none';
     }
