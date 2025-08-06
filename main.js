@@ -1,17 +1,14 @@
-console.log("main.js loaded");
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-// Initialize Supabase client
 const supabaseUrl = 'https://jdkhhywfskabkpzbizbs.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impka2hoeXdmc2thYmtwemJpemJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0ODY3MjAsImV4cCI6MjA3MDA2MjcyMH0.u6Fd5rAuP40WUx5iQDXvpnZ7tWR5fQXLPwIDqeB5NvA';
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // truncated for privacy
+const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-// UI elements
 const loginDiv = document.getElementById('login');
 const mapDiv = document.getElementById('map');
 const loginError = document.getElementById('login-error');
 const loginBtn = document.getElementById('login-btn');
 
-// Custom icons
 const greenIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
@@ -26,8 +23,6 @@ const redIcon = new L.Icon({
 
 let map;
 let markersLayer;
-
-loginBtn.addEventListener('click', loginUser);
 
 async function loginUser() {
   loginError.textContent = '';
@@ -49,6 +44,8 @@ async function loginUser() {
     loadMapAndMarkers();
   }
 }
+
+loginBtn.addEventListener('click', loginUser);
 
 async function loadMapAndMarkers() {
   if (!map) {
@@ -134,8 +131,7 @@ async function listFiles(markerId) {
   }).join('');
 }
 
-// Run on page load
-window.addEventListener('DOMContentLoaded', async () => {
+async function initApp() {
   const { data: { session } } = await supabaseClient.auth.getSession();
 
   if (session) {
@@ -146,4 +142,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     loginDiv.style.display = 'block';
     mapDiv.style.display = 'none';
   }
-});
+}
+
+initApp();
