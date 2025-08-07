@@ -48,21 +48,26 @@ async function loginUser() {
 loginBtn.addEventListener('click', loginUser);
 
 async function loadMapAndMarkers() {
-  if (!map) {
-    const maptilerKey = 'Eykq6rqTqPVtQktc4Pbu';
+      if (!map) {
+      map = L.map('map').setView([53.771317, -2.366353], 16);
 
-    L.tileLayer(`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${maptilerKey}`, {
-      attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      tileSize: 512,
-      zoomOffset: -1,
-      maxZoom: 20,
-    }).addTo(map);
-   }
-  
-  markersLayer = L.layerGroup().addTo(map);
+      const maptilerKey = 'Eykq6rqTqPVtQktc4Pbu';
+      L.tileLayer(`https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.png?key=${maptilerKey}`, {
+        attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        tileSize: 512,
+        zoomOffset: -1,
+        maxZoom: 20,
+      }).addTo(map);
 
+      // ✅ Initialize the marker layer here
+      markersLayer = L.layerGroup().addTo(map);
+    }
 
-  markersLayer.clearLayers();
+    // ✅ Check if it exists before clearing
+    if (markersLayer) {
+      markersLayer.clearLayers();
+    }
+
 
   const { data: markers, error } = await supabaseClient.from('markers').select('*');
 
