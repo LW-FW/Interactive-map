@@ -49,10 +49,18 @@ loginBtn.addEventListener('click', loginUser);
 
 async function loadMapAndMarkers() {
   if (!map) {
-    map = L.map('map').setView([51.505, -0.09], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
-    markersLayer = L.layerGroup().addTo(map);
-  }
+    const maptilerKey = 'Eykq6rqTqPVtQktc4Pbu';
+
+    L.tileLayer(`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${maptilerKey}`, {
+      attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      tileSize: 512,
+      zoomOffset: -1,
+      maxZoom: 20,
+    }).addTo(map);
+   }
+  
+  markersLayer = L.layerGroup().addTo(map);
+
 
   markersLayer.clearLayers();
 
