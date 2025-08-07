@@ -21,6 +21,12 @@ const redIcon = new L.Icon({
   iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
 });
 
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await supabaseClient.auth.signOut();
+  location.reload(); // Refresh to trigger login screen
+});
+
+
 let map;
 let markersLayer;
 
@@ -75,7 +81,8 @@ async function loadMapAndMarkers() {
     alert('Failed to load markers: ' + error.message);
     return;
   }
-
+  console.log("Fetched markers:", markers);
+  
   for (const marker of markers) {
     const icon = marker.active ? greenIcon : redIcon;
     const leafletMarker = L.marker([marker.lat, marker.lng], { icon }).addTo(markersLayer);
