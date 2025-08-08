@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const mapDiv = document.getElementById('map');
   const loginError = document.getElementById('login-error');
   const loginBtn = document.getElementById('login-btn');
-  const logoutBtn = document.getElementById('logout-btn');
+
 
   const greenIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
@@ -23,14 +23,46 @@ document.addEventListener('DOMContentLoaded', () => {
     iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
   });
 
+  // ===== BURGER MENU FUNCTIONALITY =====
+const burgerIcon = document.querySelector('.burger-icon');
+const menuItems = document.querySelector('.menu-items');
+
+burgerIcon.addEventListener('click', () => {
+  burgerIcon.classList.toggle('open'); // animate icon into X
+  menuItems.classList.toggle('show');  // slide menu in/out
+});
+
+
+// Menu button event listeners
+document.getElementById('menu-signout').addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  location.reload();
+});
+
+document.getElementById('menu-add-marker').addEventListener('click', () => {
+  alert('Add Marker feature coming soon!');
+});
+
+document.getElementById('menu-delete-marker').addEventListener('click', () => {
+  alert('Delete Marker feature coming soon!');
+});
+
+document.getElementById('menu-delete-file').addEventListener('click', () => {
+  alert('Delete File feature coming soon!');
+});
+
+document.getElementById('menu-update-email').addEventListener('click', () => {
+  alert('Update Email feature coming soon!');
+});
+
+document.getElementById('menu-update-password').addEventListener('click', () => {
+  alert('Update Password feature coming soon!');
+});
+
   let map;
   let markersLayer;
 
   loginBtn.addEventListener('click', loginUser);
-  logoutBtn.addEventListener('click', async () => {
-    await supabase.auth.signOut();
-    location.reload();
-  });
 
   async function loginUser() {
     loginError.textContent = '';
@@ -58,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
       map = L.map('map').setView([53.771317, -2.366353], 16);
 
       const maptilerKey = 'Eykq6rqTqPVtQktc4Pbu';
-      L.tileLayer(`https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.png?key=${maptilerKey}`, {
+      L.tileLayer(`https://api.maptiler.com/maps/landscape/{z}/{x}/{y}.png?key=${maptilerKey}`, {
         attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         tileSize: 512,
         zoomOffset: -1,
@@ -80,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     for (const marker of markers) {
       const icon = marker.active ? greenIcon : redIcon;
-      const leafletMarker = L.marker([marker.lat, marker.lng], { icon }).addTo(markersLayer);
+      const leafletMarker = L.marker([marker.lat, marker.long], { icon }).addTo(markersLayer);
 
       const buttonId = `toggle-${marker.id}`;
       const formId = `upload-${marker.id}`;

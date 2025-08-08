@@ -5,15 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Supabase + Leaflet Login</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+
   <style>
     #map { height: 90vh; display: none; }
     #login { max-width: 300px; margin: 50px auto; }
     #login input { display: block; margin: 10px 0; padding: 8px; width: 100%; }
     #login button { padding: 8px 12px; width: 100%; cursor: pointer; }
     .file-list a { display: block; margin-top: 5px; }
+    
   </style>
 </head>
 <body>
+  <div class="burger-menu">
+  <div class="burger-icon">
+  <span></span>
+  <span></span>
+  <span></span>
+  </div>
+  <div class="menu-items">
+    <button id="menu-signout">Sign Out</button>
+    <button id="menu-add-marker">Add Marker</button>
+    <button id="menu-delete-marker">Delete Marker</button>
+    <button id="menu-delete-file">Delete File</button>
+    <button id="menu-update-email">Update Email</button>
+    <button id="menu-update-password">Update Password</button>
+  </div>
+</div>
+
 
 <div id="login">
   <h2>Login</h2>
@@ -24,7 +43,6 @@
 </div>
 
 <div id="map"></div>
-<button id="logout-btn">Logout</button>
 <!-- Load external libraries with defer -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
