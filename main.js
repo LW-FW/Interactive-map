@@ -145,6 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       markersLayer = L.layerGroup().addTo(map);
 
+      L.marker([53.771317, -2.366353]).addTo(map).bindPopup('Test Marker');
+
+
       // Attach filter toggle listeners after map is created
       document.querySelectorAll('.toggle-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -265,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function initApp() {
-    const devBypass = true; // Set to true to skip login and load map immediately for dev (Live Preview)
+    const devBypass = false; // Set to true to skip login and load map immediately for dev (Live Preview)
     if (devBypass) {
       loginDiv.style.display = 'none';
       mapDiv.style.display = 'block';
