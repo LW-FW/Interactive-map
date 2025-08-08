@@ -20,7 +20,6 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
-}
 
 #login h2 {
   margin-bottom: 20px;
@@ -72,24 +71,41 @@
   font-family: Arial, sans-serif;
 }
 
-.popup-title {
-  font-size: 1.1rem;
+.popup-name {
+  font-size: 1.5rem;
   font-weight: bold;
-  margin-bottom: 6px;
+  color: #333;
 }
 
-.popup-content p {
-  margin: 4px 0;
+.popup-active {
+  font-size: 1rem;
+  font-weight: normal;
+  color: #555;
 }
 
-.popup-content button {
-  margin-top: 6px;
-  padding: 4px 8px;
+.popup-active .status {
+  font-weight: bold;
+  color: green; /* or red if inactive, you could do JS toggle for that */
+}
+
+.popup-toggle-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
   cursor: pointer;
+  background-color: #2c1091;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.popup-toggle-btn:hover {
+  background-color: #00b327;
 }
 
 .popup-content input[type="file"] {
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .file-list a {
@@ -103,11 +119,22 @@
   text-decoration: underline;
 }
 
+.status.active {
+  font-weight: bold;
+  color: green;
+}
+
+.status.inactive {
+  font-weight: bold;
+  color: red;
+}
+
 /* ==== BURGER MENU ==== */
+
 .burger-menu {
   position: fixed;
   top: 20px;
-  right: 10px; /* moved to the right */
+  right: 20px; /* moved to the right */
   z-index: 9999;
 }
 
@@ -127,7 +154,7 @@
   position: absolute;
   height: 3px;
   width: 100%;
-  background: #ffffff;
+  background: #000000;
   border-radius: 2px;
   transition: all 0.3s ease;
 }
@@ -171,7 +198,7 @@
   box-shadow: -2px 0 5px rgba(22, 19, 14, 0.2);
   padding: 20px 10px;
   transition: right 0.3s ease-in-out; /* sliding animation */
-  padding-top: 60px;
+  padding-top: 20px;
 }
 
 .menu-items.show {
@@ -228,12 +255,23 @@
 /* ===== MARKER FILTER TOGGLE ===== */
 .marker-filter {
   margin-top: 20px;
-  text-align: center;
 }
 
+.menu-items p,
 .marker-filter p {
-  margin-bottom: 8px;
+  margin-bottom: 15px;
+  padding-top: 10px;
+  font-size: 0.9rem;
   font-weight: bold;
+  text-align: left;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.marker-filter h3 {
+  font-size: 0.9rem;
+  font-weight: normal;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  margin: 0 0 8px 0; /* keep your existing bottom margin */
 }
 
 .toggle-group {
