@@ -4,22 +4,66 @@
   display: none;
 }
 
+/* ==== LOGIN PAGE ==== */
 #login {
-  max-width: 300px;
-  margin: 50px auto;
+   max-width: 320px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  font-family: Arial, sans-serif;
+  text-align: center;
+
+  /* Center vertically and horizontally */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+}
+
+#login h2 {
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+  color: #333;
 }
 
 #login input {
   display: block;
   margin: 10px 0;
-  padding: 8px;
+  padding: 10px;
   width: 100%;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
 }
 
 #login button {
-  padding: 8px 12px;
+  padding: 10px 12px;
   width: 100%;
   cursor: pointer;
+  background: #007bff;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  transition: background 0.3s ease;
+}
+
+#login button:hover {
+  background: #0056b3;
+}
+
+#login-error {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: red;
+}
+
+.file-list a {
+  display: block;
+  margin-top: 5px;
 }
 
 /* ==== POPUP STYLING ==== */
@@ -127,6 +171,7 @@
   box-shadow: -2px 0 5px rgba(22, 19, 14, 0.2);
   padding: 20px 10px;
   transition: right 0.3s ease-in-out; /* sliding animation */
+  padding-top: 60px;
 }
 
 .menu-items.show {
@@ -153,7 +198,7 @@
 @media (max-width: 768px) {
   .burger-menu {
     top: 15px;  /* slightly closer to the top for mobile */
-    left: 10px;
+    right: 10px;
   }
 
   .burger-icon {
@@ -164,6 +209,7 @@
   .menu-items {
     width: 180px; /* narrower for smaller screens */
     padding: 10px;
+    padding-top: 50px;
   }
 
   .menu-items button {

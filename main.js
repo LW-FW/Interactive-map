@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginError = document.getElementById('login-error');
   const loginBtn = document.getElementById('login-btn');
 
+  const burgerMenu = document.querySelector('.burger-menu');
+  burgerMenu.style.display = 'none'; // hide menu by default
 
   const greenIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
@@ -81,6 +83,7 @@ document.getElementById('menu-update-password').addEventListener('click', () => 
     } else {
       loginDiv.style.display = 'none';
       mapDiv.style.display = 'block';
+      burgerMenu.style.display = 'block'; 
       loadMapAndMarkers();
     }
   }
@@ -90,7 +93,7 @@ document.getElementById('menu-update-password').addEventListener('click', () => 
       map = L.map('map').setView([53.771317, -2.366353], 16);
 
       const maptilerKey = 'Eykq6rqTqPVtQktc4Pbu';
-      L.tileLayer(`https://api.maptiler.com/maps/landscape/{z}/{x}/{y}.png?key=${maptilerKey}`, {
+      L.tileLayer(`https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.png?key=${maptilerKey}`, {
         attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         tileSize: 512,
         zoomOffset: -1,
@@ -187,10 +190,12 @@ document.getElementById('menu-update-password').addEventListener('click', () => 
     if (session) {
       loginDiv.style.display = 'none';
       mapDiv.style.display = 'block';
+      burgerMenu.style.display = 'block';
       loadMapAndMarkers();
     } else {
       loginDiv.style.display = 'block';
       mapDiv.style.display = 'none';
+      burgerMenu.style.display = 'none';
     }
   }
 
