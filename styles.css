@@ -1,12 +1,12 @@
 /* ==== MAP AND LOGIN ==== */
 #map {
-  height: 90vh;
+  height: 97vh;
   display: none;
 }
 
 /* ==== LOGIN PAGE ==== */
 #login {
-   max-width: 320px;
+  max-width: 320px;
   padding: 20px;
   background: white;
   border-radius: 12px;
@@ -127,7 +127,7 @@
   position: absolute;
   height: 3px;
   width: 100%;
-  background: #000000;
+  background: #ffffff;
   border-radius: 2px;
   transition: all 0.3s ease;
 }

@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const burgerMenu = document.querySelector('.burger-menu');
   burgerMenu.style.display = 'none'; // hide menu by default
 
+    let currentFilter = 'all';
+
   const greenIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
     shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
@@ -28,6 +30,85 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===== BURGER MENU FUNCTIONALITY =====
 const burgerIcon = document.querySelector('.burger-icon');
 const menuItems = document.querySelector('.menu-items');
+
+
+
+
+/* ---------- BUTTON FUNCTIONALITY WITH CONFIRMATION ---------- */
+
+// 1. Sign Out
+document.getElementById('menu-signout').addEventListener('click', async () => {
+  if (confirm("Are you sure you want to sign out?")) {
+    await supabase.auth.signOut();
+    location.reload();
+  }
+});
+
+// 2. Add Marker
+document.getElementById('menu-add-marker').addEventListener('click', async () => {
+  const name = prompt("Enter marker name:");
+  const lat = parseFloat(prompt("Enter latitude:"));
+  const long = parseFloat(prompt("Enter longitude:"));
+  const active = confirm("Should this marker be active?");
+
+  if (name && !isNaN(lat) && !isNaN(long)) {
+    const { error } = await supabase.from('markers').insert([{ name, lat, long, active }]);
+    if (error) alert("Error adding marker: " + error.message);
+    else {
+      alert("Marker added successfully!");
+      loadMapAndMarkers();
+    }
+  } else {
+    alert("Invalid input. Marker not added.");
+  }
+});
+
+// 3. Delete Marker
+document.getElementById('menu-delete-marker').addEventListener('click', async () => {
+  const id = prompt("Enter the ID of the marker to delete:");
+  if (id && confirm("Are you sure you want to delete this marker?")) {
+    const { error } = await supabase.from('markers').delete().eq('id', id);
+    if (error) alert("Error deleting marker: " + error.message);
+    else {
+      alert("Marker deleted successfully!");
+      loadMapAndMarkers();
+    }
+  }
+});
+
+// 4. Delete File
+document.getElementById('menu-delete-file').addEventListener('click', async () => {
+  const markerId = prompt("Enter the marker ID for the file:");
+  const fileName = prompt("Enter the file name to delete:");
+
+  if (markerId && fileName && confirm("Delete this file?")) {
+    const { error } = await supabase.storage.from('attachments').remove([`${markerId}/${fileName}`]);
+    if (error) alert("Error deleting file: " + error.message);
+    else alert("File deleted successfully!");
+  }
+});
+
+// 5. Update Email
+document.getElementById('menu-update-email').addEventListener('click', async () => {
+  const newEmail = prompt("Enter your new email:");
+  if (newEmail && confirm("Update email to: " + newEmail + "?")) {
+    const { error } = await supabase.auth.updateUser({ email: newEmail });
+    if (error) alert("Error updating email: " + error.message);
+    else alert("Email updated successfully!");
+  }
+});
+
+// 6. Update Password
+document.getElementById('menu-update-password').addEventListener('click', async () => {
+  const newPassword = prompt("Enter your new password:");
+  if (newPassword && confirm("Change your password now?")) {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) alert("Error updating password: " + error.message);
+    else alert("Password updated successfully!");
+  }
+});
+
+
 
 burgerIcon.addEventListener('click', () => {
   burgerIcon.classList.toggle('open'); // animate icon into X
@@ -102,9 +183,12 @@ document.getElementById('menu-update-password').addEventListener('click', () => 
 
       markersLayer = L.layerGroup().addTo(map);
     }
+    
+
 
     if (markersLayer) {
       markersLayer.clearLayers();
+
     }
 
     const { data: markers, error } = await supabase.from('markers').select('*');
