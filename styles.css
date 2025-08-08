@@ -198,12 +198,13 @@
 @media (max-width: 768px) {
   .burger-menu {
     top: 15px;  /* slightly closer to the top for mobile */
-    right: 10px;
+    right: 15px;
   }
 
   .burger-icon {
-    font-size: 22px;
+    font-size: 18px;
     padding: 8px;
+
   }
 
   .menu-items {
@@ -222,4 +223,43 @@
   .menu-items {
     width: 200px; /* slightly wider on desktop/tablet */
   }
+}
+
+/* ===== MARKER FILTER TOGGLE ===== */
+.marker-filter {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.marker-filter p {
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.toggle-group {
+  display: flex;
+  justify-content: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 8px;
+  cursor: pointer;
+  border: none;
+  background: #f5f5f5;
+  font-size: 14px;
+  transition:background 0.3s ease, color 0.3s ease;
+}
+
+.toggle-btn:not(:last-child) {
+  border-right: 1px solid #ccc;
+}
+
+.toggle-btn.active {
+  background: #007bff;
+  color: white;
+  transform: scale(1.05)
 }
