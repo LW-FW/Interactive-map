@@ -6,53 +6,46 @@
   <title>Supabase + Leaflet Login</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="styles.css" />
-
- 
 </head>
 <body>
   <div class="burger-menu">
-  <div class="burger-icon">
-  <span></span>
-  <span></span>
-  <span></span>
+    <div class="burger-icon">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <div class="menu-items">
+      <p>Menu:</p>
+      <button id="menu-add-marker">Add Marker</button>
+      <button id="menu-delete-marker">Delete Marker</button>
+      <button id="menu-delete-file">Delete File</button>
+      <button id="menu-update-email">Update Email</button>
+      <button id="menu-update-password">Update Password</button>
+      <button id="menu-signout">Sign Out</button>
+      <div class="marker-filter">
+        <p>Filter map:</p>
+        <h3>Only show points that are...</h3>
+        <div class="toggle-group">
+          <button class="toggle-btn" data-filter="on">On</button>
+          <button class="toggle-btn" data-filter="off">Off</button>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="menu-items">
-    <p>Menu:</p>
-    <button id="menu-add-marker">Add Marker</button>
-    <button id="menu-delete-marker">Delete Marker</button>
-    <button id="menu-delete-file">Delete File</button>
-    <button id="menu-update-email">Update Email</button>
-    <button id="menu-update-password">Update Password</button>
-    <button id="menu-signout">Sign Out</button>
-    <div class="marker-filter">
-      <p>Filter map: </p>
-      <h3>Only show points that are...</h3>
-      <div class="toggle-group">
-      <button class="toggle-btn" data-filter="on">On</button>
-      <button class="toggle-btn" data-filter="off">Off</button>
+
+  <div id="login">
+    <h2>Login</h2>
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+    <button id="login-btn">Login</button>
+    <p id="login-error"></p>
   </div>
 
-  </div>
-  </div>
-</div>
+  <div id="map"></div>
 
-
-<div id="login">
-  <h2>Login</h2>
-  <input id="email" type="email" placeholder="Email" />
-  <input id="password" type="password" placeholder="Password" />
-  <button id="login-btn">Login</button>
-  <p id="login-error" style="color:red;"></p>
-</div>
-
-<div id="map"></div>
-<!-- Load external libraries with defer -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-
-
-<!-- Load your main app script AFTER libraries -->
-<script type="module" src="main.js"></script>
-
+  <!-- Load external libraries with defer -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Load your main app script AFTER libraries -->
+  <script type="module" src="main.js"></script>
 </body>
 </html>
